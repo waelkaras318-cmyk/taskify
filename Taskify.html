@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taskify</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9eef2;--grid:#d5dde4;--panel:#fbfcfd;--ink:#14242e;--mute:#5d707c;--line:#c6d1d9;--acc:#0e5a63;--acc-ink:#fff;--hl:#f3d94e;--danger:#a53030;--r:6px;--f:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",sans-serif;--m:ui-monospace,Menlo,Consolas,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b22;--grid:#172731;--panel:#15252e;--ink:#e4edf2;--mute:#8fa4b0;--line:#2a3f4b;--acc:#52c0c9;--acc-ink:#07262a;--hl:#d9bf3a;--danger:#e57a7a}}
+:root[data-theme="dark"]{--bg:#0f1b22;--grid:#172731;--panel:#15252e;--ink:#e4edf2;--mute:#8fa4b0;--line:#2a3f4b;--acc:#52c0c9;--acc-ink:#07262a;--hl:#d9bf3a;--danger:#e57a7a}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:var(--f);color:var(--ink);background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;line-height:1.55}
+.app{display:flex;min-height:100%}
+nav{width:230px;flex:none;background:var(--panel);border-inline-end:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;height:100dvh}
+.brand{font-size:26px;font-weight:700;letter-spacing:-.02em;padding:0 8px 18px}
+.brand span{background:linear-gradient(transparent 60%,var(--hl) 60%)}
+nav button.tab{all:unset;cursor:pointer;padding:10px 12px;border-radius:var(--r);display:flex;justify-content:space-between;align-items:center;font-weight:500}
+nav button.tab:hover{background:var(--grid)}
+nav button.tab[aria-current="true"]{background:var(--acc);color:var(--acc-ink)}
+nav .cnt{font-size:12px;opacity:.8}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--mute)}
+select,input,textarea{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;width:100%}
+textarea{resize:vertical;min-height:90px}
+textarea.code{font-family:var(--m);font-size:13px;direction:ltr;text-align:left;min-height:120px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+main{flex:1;padding:28px clamp(16px,4vw,48px);max-width:1100px}
+.head{display:flex;gap:12px;align-items:end;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+h1{margin:0;font-size:30px;letter-spacing:-.02em;line-height:1.15}
+.sub{color:var(--mute);margin:4px 0 0;max-width:60ch}
+.btn{cursor:pointer;font:inherit;font-weight:600;border:1px solid var(--acc);background:var(--acc);color:var(--acc-ink);border-radius:var(--r);padding:8px 16px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.sm{padding:3px 10px;font-size:13px;font-weight:500}
+.btn:hover{filter:brightness(1.08)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.form{display:grid;gap:10px;margin-bottom:18px;max-width:640px;border-inline-start:4px solid var(--hl)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.list{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.item h3{margin:0 0 4px;font-size:17px}
+.item p{margin:6px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.tag{display:inline-block;font-size:12px;font-weight:600;background:var(--hl);color:#2b2500;border-radius:3px;padding:0 7px}
+.meta{font-size:12px;color:var(--mute);margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.acts{display:flex;gap:6px}
+pre{margin:8px 0 0;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:10px;overflow-x:auto;font:13px/1.5 var(--m);direction:ltr;text-align:left;max-height:240px}
+.cols{display:grid;gap:20px;grid-template-columns:1fr 1fr}
+h2{font-size:18px;margin:0 0 10px}
+.task{display:flex;gap:10px;align-items:center;padding:9px 12px;margin-bottom:8px}
+.task input{width:18px;height:18px;accent-color:var(--acc);flex:none;padding:0}
+.task span{flex:1;overflow-wrap:anywhere}
+.task.done span{text-decoration:line-through;color:var(--mute)}
+.x{all:unset;cursor:pointer;color:var(--danger);font-size:13px;padding:2px 6px;border-radius:4px}
+.x:hover{background:var(--grid)}
+.empty{color:var(--mute);border:1px dashed var(--line);border-radius:var(--r);padding:20px;text-align:center}
+.status{font-size:12px;font-weight:600;border:1px solid var(--acc);color:var(--acc);border-radius:3px;padding:0 7px;margin-inline-start:6px}
+@media (max-width:820px){.app{flex-direction:column}nav{width:100%;height:auto;position:static;flex-direction:row;flex-wrap:wrap;align-items:center;border-inline-end:0;border-bottom:1px solid var(--line)}.brand{padding:0 8px 0 0}.side-foot{margin:0 0 0 auto;flex-direction:row}.side-foot select{width:auto}.cols{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav aria-label="Taskify">
+  <div class="brand"><span>Taskify</span></div>
+  <button class="tab" data-hub="study"></button>
+  <button class="tab" data-hub="code"></button>
+  <button class="tab" data-hub="meet"></button>
+  <div class="side-foot">
+    <label for="lang" id="langLbl"></label>
+    <select id="lang"><option value="en">English</option><option value="ar">العربية</option><option value="es">Español</option></select>
+  </div>
+</nav>
+<main id="main"></main>
+</div>
+<script>
+const I18N={
+en:{study:"Study Hub",code:"Code & Logic Hub",meet:"Meetings & Tasks",lang:"Language",
+studyD:"Quick notes, summaries and course material.",codeD:"Snippets, programming ideas and project progress.",meetD:"Meeting notes, schedules and daily action items.",
+add:"Add",newNote:"New note",newSnip:"New snippet",newMeet:"New meeting",save:"Save",cancel:"Cancel",del:"Delete",copy:"Copy",copied:"Copied",
+title:"Title",subject:"Subject",content:"Write your note",search:"Search notes",code:"Paste code or describe the idea",language:"Language / stack",
+idea:"Idea",progress:"In progress",done:"Done",meetings:"Meetings",tasks:"Today's tasks",date:"Date and time",notes:"Notes and decisions",taskPh:"Add a task and press Enter",
+emptyStudy:"No notes yet. Select “New note” to write your first one.",emptyCode:"No snippets yet. Save a snippet or project idea.",emptyMeet:"No meetings logged.",emptyTask:"No tasks yet.",noMatch:"No notes match your search."},
+ar:{study:"مركز الدراسة",code:"مركز البرمجة والمنطق",meet:"الاجتماعات والمهام",lang:"اللغة",
+studyD:"ملاحظات سريعة وملخصات ومواد دراسية.",codeD:"مقتطفات برمجية وأفكار وتقدّم المشاريع.",meetD:"ملاحظات الاجتماعات والمواعيد ومهام اليوم.",
+add:"إضافة",newNote:"ملاحظة جديدة",newSnip:"مقتطف جديد",newMeet:"اجتماع جديد",save:"حفظ",cancel:"إلغاء",del:"حذف",copy:"نسخ",copied:"تم النسخ",
+title:"العنوان",subject:"المادة",content:"اكتب ملاحظتك",search:"ابحث في الملاحظات",code:"الصق الكود أو صف الفكرة",language:"اللغة / التقنية",
+idea:"فكرة",progress:"قيد التنفيذ",done:"مكتمل",meetings:"الاجتماعات",tasks:"مهام اليوم",date:"التاريخ والوقت",notes:"الملاحظات والقرارات",taskPh:"أضف مهمة واضغط Enter",
+emptyStudy:"لا توجد ملاحظات بعد. اختر «ملاحظة جديدة» لتكتب أول ملاحظة.",emptyCode:"لا توجد مقتطفات بعد. احفظ مقتطفًا أو فكرة مشروع.",emptyMeet:"لا توجد اجتماعات مسجلة.",emptyTask:"لا توجد مهام بعد.",noMatch:"لا توجد ملاحظات مطابقة للبحث."},
+es:{study:"Centro de estudio",code:"Centro de código y lógica",meet:"Reuniones y tareas",lang:"Idioma",
+studyD:"Notas rápidas, resúmenes y material académico.",codeD:"Fragmentos de código, ideas y avance de proyectos.",meetD:"Notas de reuniones, horarios y tareas del día.",
+add:"Añadir",newNote:"Nueva nota",newSnip:"Nuevo fragmento",newMeet:"Nueva reunión",save:"Guardar",cancel:"Cancelar",del:"Eliminar",copy:"Copiar",copied:"Copiado",
+title:"Título",subject:"Asignatura",content:"Escribe tu nota",search:"Buscar notas",code:"Pega el código o describe la idea",language:"Lenguaje / tecnología",
+idea:"Idea",progress:"En curso",done:"Hecho",meetings:"Reuniones",tasks:"Tareas de hoy",date:"Fecha y hora",notes:"Notas y decisiones",taskPh:"Añade una tarea y pulsa Enter",
+emptyStudy:"Aún no hay notas. Elige «Nueva nota» para escribir la primera.",emptyCode:"Aún no hay fragmentos. Guarda un fragmento o una idea.",emptyMeet:"No hay reuniones registradas.",emptyTask:"Aún no hay tareas.",noMatch:"Ninguna nota coincide con la búsqueda."}
+};
+const KEY="taskify:v1";
+let db={notes:[],snips:[],meets:[],tasks:[]},lang="en",hub="study",adding=false,q="";
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s){db=Object.assign(db,s.db||{});lang=s.lang||lang;hub=s.hub||hub}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({db,lang,hub}))}catch(e){}};
+const t=k=>I18N[lang][k]||k;
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const $=s=>document.querySelector(s);
+const val=id=>($("#"+id)||{}).value||"";
+function fmt(d){try{return new Date(d).toLocaleString(lang==="ar"?"ar-EG":lang,{dateStyle:"medium",timeStyle:"short"})}catch(e){return d}}
+
+function applyLang(){
+  document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+  $("#lang").value=lang;$("#langLbl").textContent=t("lang");
+  const n={study:db.notes.length,code:db.snips.length,meet:db.meets.length+db.tasks.length};
+  document.querySelectorAll(".tab").forEach(b=>{const h=b.dataset.hub;b.innerHTML=`<span>${esc(t(h))}</span><span class="cnt">${n[h]}</span>`;b.setAttribute("aria-current",h===hub)});
+}
+function head(title,desc,btn){return `<div class="head"><div><h1>${esc(title)}</h1><p class="sub">${esc(desc)}</p></div>${btn?`<button class="btn" id="toggle">${esc(adding?t("cancel"):btn)}</button>`:""}</div>`}
+function delBtn(col,id){return `<button class="x" data-del="${col}:${id}">${esc(t("del"))}</button>`}
+
+function render(){
+  applyLang();let h="";
+  if(hub==="study"){
+    h=head(t("study"),t("studyD"),t("newNote"));
+    if(adding)h+=`<div class="card form"><input id="f1" placeholder="${esc(t("title"))}"><input id="f2" placeholder="${esc(t("subject"))}"><textarea id="f3" placeholder="${esc(t("content"))}"></textarea><div class="row"><button class="btn" id="saveBtn">${esc(t("save"))}</button></div></div>`;
+    h+=`<input id="search" style="max-width:320px;margin-bottom:16px" placeholder="${esc(t("search"))}" value="${esc(q)}">`;
+    const L=db.notes.filter(x=>(x.t+x.s+x.b).toLowerCase().includes(q.toLowerCase()));
+    h+=L.length?`<div class="list">${L.map(x=>`<article class="card item"><h3>${esc(x.t)}</h3>${x.s?`<span class="tag">${esc(x.s)}</span>`:""}<p>${esc(x.b)}</p><div class="meta"><span>${esc(fmt(x.at))}</span>${delBtn("notes",x.id)}</div></article>`).join("")}</div>`:`<div class="empty">${esc(db.notes.length?t("noMatch"):t("emptyStudy"))}</div>`;
+  }else if(hub==="code"){
+    h=head(t("code"),t("codeD"),t("newSnip"));
+    if(adding)h+=`<div class="card form"><input id="f1" placeholder="${esc(t("title"))}"><div class="row"><input id="f2" placeholder="${esc(t("language"))}"><select id="f4"><option value="idea">${esc(t("idea"))}</option><option value="progress">${esc(t("progress"))}</option><option value="done">${esc(t("done"))}</option></select></div><textarea class="code" id="f3" placeholder="${esc(t("code"))}"></textarea><div class="row"><button class="btn" id="saveBtn">${esc(t("save"))}</button></div></div>`;
+    h+=db.snips.length?`<div class="list">${db.snips.map(x=>`<article class="card item"><h3>${esc(x.t)}</h3>${x.l?`<span class="tag">${esc(x.l)}</span>`:""}<span class="status" data-status="${x.id}" role="button" tabindex="0" style="cursor:pointer">${esc(t(x.st))}</span><pre>${esc(x.c)}</pre><div class="meta"><span>${esc(fmt(x.at))}</span><span class="acts"><button class="btn ghost sm" data-copy="${x.id}">${esc(t("copy"))}</button>${delBtn("snips",x.id)}</span></div></article>`).join("")}</div>`:`<div class="empty">${esc(t("emptyCode"))}</div>`;
+  }else{
+    h=head(t("meet"),t("meetD"),t("newMeet"));
+    if(adding)h+=`<div class="card form"><input id="f1" placeholder="${esc(t("title"))}"><input type="datetime-local" id="f2" aria-label="${esc(t("date"))}"><textarea id="f3" placeholder="${esc(t("notes"))}"></textarea><div class="row"><button class="btn" id="saveBtn">${esc(t("save"))}</button></div></div>`;
+    const M=[...db.meets].sort((a,b)=>(a.d||"").localeCompare(b.d||""));
+    h+=`<div class="cols"><section><h2>${esc(t("meetings"))}</h2>${M.length?M.map(x=>`<article class="card item" style="margin-bottom:12px"><h3>${esc(x.t)}</h3>${x.d?`<span class="tag">${esc(fmt(x.d))}</span>`:""}<p>${esc(x.b)}</p><div class="meta"><span></span>${delBtn("meets",x.id)}</div></article>`).join(""):`<div class="empty">${esc(t("emptyMeet"))}</div>`}</section>
+    <section><h2>${esc(t("tasks"))}</h2><input id="taskIn" style="margin-bottom:10px" placeholder="${esc(t("taskPh"))}">${db.tasks.length?db.tasks.map(x=>`<div class="card task ${x.done?"done":""}"><input type="checkbox" data-task="${x.id}" ${x.done?"checked":""}><span>${esc(x.t)}</span>${delBtn("tasks",x.id)}</div>`).join(""):`<div class="empty">${esc(t("emptyTask"))}</div>`}</section></div>`;
+  }
+  $("#main").innerHTML=h;
+}
+
+document.addEventListener("click",e=>{
+  const el=e.target.closest("button,[data-status]");if(!el)return;
+  if(el.dataset.hub){hub=el.dataset.hub;adding=false;q="";save();render();return}
+  if(el.id==="toggle"){adding=!adding;render();const f=$("#f1");if(f)f.focus();return}
+  if(el.id==="saveBtn"){
+    const ti=val("f1").trim(),at=new Date().toISOString();
+    if(hub==="study"){if(!ti&&!val("f3").trim())return;db.notes.unshift({id:uid(),t:ti||"—",s:val("f2").trim(),b:val("f3"),at})}
+    else if(hub==="code"){if(!ti&&!val("f3").trim())return;db.snips.unshift({id:uid(),t:ti||"—",l:val("f2").trim(),c:val("f3"),st:val("f4"),at})}
+    else{if(!ti)return;db.meets.push({id:uid(),t:ti,d:val("f2"),b:val("f3")})}
+    adding=false;save();render();return}
+  if(el.dataset.del){const [c,id]=el.dataset.del.split(":");db[c]=db[c].filter(x=>x.id!==id);save();render();return}
+  if(el.dataset.copy){const s=db.snips.find(x=>x.id===el.dataset.copy);const done=()=>{el.textContent=t("copied");setTimeout(()=>{el.textContent=t("copy")},1200)};
+    try{navigator.clipboard.writeText(s.c).then(done,()=>{})}catch(err){}return}
+  if(el.dataset.status){const s=db.snips.find(x=>x.id===el.dataset.status);const o=["idea","progress","done"];s.st=o[(o.indexOf(s.st)+1)%3];save();render()}
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&e.target.id==="taskIn"){const v=e.target.value.trim();if(v){db.tasks.unshift({id:uid(),t:v,done:false});save();render();$("#taskIn").focus()}}
+  if((e.key==="Enter"||e.key===" ")&&e.target.dataset&&e.target.dataset.status){e.preventDefault();e.target.click()}
+});
+document.addEventListener("change",e=>{
+  if(e.target.dataset.task){const x=db.tasks.find(k=>k.id===e.target.dataset.task);x.done=e.target.checked;save();render()}
+  if(e.target.id==="lang"){lang=e.target.value;save();render()}
+});
+document.addEventListener("input",e=>{
+  if(e.target.id==="search"){q=e.target.value;const p=e.target.selectionStart;render();const s=$("#search");s.focus();s.setSelectionRange(p,p)}
+});
+render();
+</script>
+</body>
+</html>
